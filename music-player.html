@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .player-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        .album-art {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .album-art:hover {
+            transform: scale(1.02);
+        }
+
+        .track-info {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .track-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .track-artist {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .progress-container {
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .play-btn {
+            width: 70px;
+            height: 70px;
+            font-size: 28px;
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .volume-icon {
+            font-size: 20px;
+            color: #667eea;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .volume-value {
+            font-size: 14px;
+            color: #666;
+            min-width: 35px;
+            text-align: right;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .playing .album-art {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container" id="player">
+        <div class="album-art">🎵</div>
+        
+        <div class="track-info">
+            <div class="track-title" id="trackTitle">Summer Vibes</div>
+            <div class="track-artist" id="trackArtist">The Audio Artists</div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="time-info">
+                <span id="currentTime">0:00</span>
+                <span id="duration">3:45</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" id="prevBtn" onclick="previousTrack()">⏮</button>
+            <button class="control-btn play-btn" id="playBtn" onclick="togglePlay()">▶</button>
+            <button class="control-btn" id="nextBtn" onclick="nextTrack()">⏭</button>
+        </div>
+
+        <div class="volume-container">
+            <span class="volume-icon">🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
+            <span class="volume-value" id="volumeValue">70%</span>
+        </div>
+    </div>
+
+    <script>
+        // Music tracks data
+        const tracks = [
+            { title: "Mera Dil Bhi Kitna Pagal Hai", artist: "Saajan (1991)", duration: 345 },
+            { title: "Pardesi Pardesi", artist: "Raja Hindustani (1996)", duration: 398 },
+            { title: "Sandese Aate Hai", artist: "Border (1997)", duration: 456 },
+            { title: "Kuch Kuch Hota Hai", artist: "Kuch Kuch Hota Hai (1998)", duration: 312 },
+            { title: "Sajan Sajan Teri Dulhan", artist: "Aarzoo (1999)", duration: 367 }
+        ];
+
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let currentTime = 0;
+        let duration = tracks[0].duration;
+        let progressInterval;
+
+        const player = document.getElementById('player');
+        const playBtn = document.getElementById('playBtn');
+        const trackTitle = document.getElementById('trackTitle');
+        const trackArtist = document.getElementById('trackArtist');
+        const progress = document.getElementById('progress');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+
+        // Initialize
+        loadTrack(currentTrackIndex);
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            
+            if (isPlaying) {
+                playBtn.textContent = '⏸';
+                player.classList.add('playing');
+                startProgress();
+            } else {
+                playBtn.textContent = '▶';
+                player.classList.remove('playing');
+                stopProgress();
+            }
+        }
+
+        function startProgress() {
+            progressInterval = setInterval(() => {
+                if (currentTime < duration) {
+                    currentTime++;
+                    updateProgress();
+                } else {
+                    nextTrack();
+                }
+            }, 1000);
+        }
+
+        function stopProgress() {
+            clearInterval(progressInterval);
+        }
+
+        function updateProgress() {
+            const percentage = (currentTime / duration) * 100;
+            progress.style.width = percentage + '%';
+            currentTimeEl.textContent = formatTime(currentTime);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return` ${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function loadTrack(index) {
+            const track = tracks[index];
+            trackTitle.textContent = track.title;
+            trackArtist.textContent = track.artist;
+            duration = track.duration;
+            currentTime = 0;
+            durationEl.textContent = formatTime(duration);
+            updateProgress();
+        }
+
+        function previousTrack() {
+            currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+            loadTrack(currentTrackIndex);
+            if (isPlaying) {
+                stopProgress();
+                startProgress();
+            }
+        }
+
+        function nextTrack() {
+            currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+            loadTrack(currentTrackIndex);
+            if (isPlaying) {
+                stopProgress();
+                startProgress();
+            }
+        }
+
+        // Progress bar click
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            currentTime = Math.floor(percent * duration);
+            updateProgress();
+        });
+
+        // Volume control
+        volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value;
+            volumeValue.textContent = volume + '%';
+        });
+    </script>
+</body>
+</html>

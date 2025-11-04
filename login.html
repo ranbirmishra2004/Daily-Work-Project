@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Sign Up Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+            min-height: 600px;
+        }
+
+        .form-container {
+            width: 50%;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .form-container.hidden {
+            display: none;
+        }
+
+        .info-container {
+            width: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .info-container h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .info-container p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .toggle-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .toggle-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .form-subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        input.error {
+            border-color: #ef4444;
+        }
+
+        input.success {
+            border-color: #10b981;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #10b981;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .password-strength {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .strength-bar.weak {
+            background: #ef4444;
+            width: 33%;
+        }
+
+        .strength-bar.medium {
+            background: #f59e0b;
+            width: 66%;
+        }
+
+        .strength-bar.strong {
+            background: #10b981;
+            width: 100%;
+        }
+
+        .strength-text {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .form-container,
+            .info-container {
+                width: 100%;
+                padding: 40px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .info-container {
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- LOGIN FORM -->
+        <div id="loginForm" class="form-container">
+            <h2 class="form-title">Welcome Back</h2>
+            <p class="form-subtitle">Sign in to your account</p>
+
+            <form id="loginFormElement" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="loginEmail" 
+                        name="email" 
+                        placeholder="Enter your email"
+                        required
+                    >
+                    <div class="error-message" id="loginEmailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input 
+                        type="password" 
+                        id="loginPassword" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                    <div class="error-message" id="loginPasswordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="rememberMe" name="rememberMe">
+                    <label for="rememberMe" style="display: inline; margin-left: 8px;">Remember me</label>
+                </div>
+
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <!-- SIGNUP FORM -->
+        <div id="signupForm" class="form-container hidden">
+            <h2 class="form-title">Create Account</h2>
+            <p class="form-subtitle">Join us today</p>
+
+            <form id="signupFormElement" onsubmit="handleSignup(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input 
+                            type="text" 
+                            id="firstName" 
+                            name="firstName" 
+                            placeholder="First name"
+                            required
+                        >
+                        <div class="error-message" id="firstNameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input 
+                            type="text" 
+                            id="lastName" 
+                            name="lastName" 
+                            placeholder="Last name"
+                            required
+                        >
+                        <div class="error-message" id="lastNameError"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupEmail">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="signupEmail" 
+                        name="email" 
+                        placeholder="Enter your email"
+                        required
+                    >
+                    <div class="error-message" id="signupEmailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="Enter your phone number"
+                        required
+                    >
+                    <div class="error-message" id="phoneError"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <select id="gender" name="gender" required>
+                            <option value="">Select gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div class="error-message" id="genderError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input 
+                            type="date" 
+                            id="dob" 
+                            name="dob"
+                            required
+                        >
+                        <div class="error-message" id="dobError"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input 
+                        type="text" 
+                        id="address" 
+                        name="address" 
+                        placeholder="Enter your address"
+                        required
+                    >
+                    <div class="error-message" id="addressError"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input 
+                            type="text" 
+                            id="city" 
+                            name="city" 
+                            placeholder="Enter your city"
+                            required
+                        >
+                        <div class="error-message" id="cityError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input 
+                            type="text" 
+                            id="state" 
+                            name="state" 
+                            placeholder="Enter your state"
+                            required
+                        >
+                        <div class="error-message" id="stateError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="zipcode">Zip Code</label>
+                        <input 
+                            type="text" 
+                            id="zipcode" 
+                            name="zipcode" 
+                            placeholder="Enter your zip code"
+                            required
+                        >
+                        <div class="error-message" id="zipcodeError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input 
+                            type="text" 
+                            id="country" 
+                            name="country" 
+                            placeholder="Enter your country"
+                            required
+                        >
+                        <div class="error-message" id="countryError"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input 
+                        type="password" 
+                        id="signupPassword" 
+                        name="password" 
+                        placeholder="Enter a strong password"
+                        required
+                        oninput="checkPasswordStrength()"
+                    >
+                    <div class="password-strength">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText"></div>
+                    <div class="error-message" id="signupPasswordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Confirm your password"
+                        required
+                    >
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms" style="display: inline; margin-left: 8px;">I agree to terms and conditions</label>
+                    <div class="error-message" id="termsError"></div>
+                </div>
+
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+
+        <!-- INFO CONTAINER -->
+        <div class="info-container">
+            <div id="loginInfo">
+                <h2>New Here?</h2>
+                <p>Sign up and discover a great amount of new opportunities!</p>
+                <button class="toggle-btn" onclick="toggleForms()">Sign Up</button>
+            </div>
+
+            <div id="signupInfo" style="display: none;">
+                <h2>Already Member?</h2>
+                <p>Sign in to access your account and continue your journey with us!</p>
+                <button class="toggle-btn" onclick="toggleForms()">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between Login and Signup forms
+        function toggleForms() {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const loginInfo = document.getElementById('loginInfo');
+            const signupInfo = document.getElementById('signupInfo');
+
+            loginForm.classList.toggle('hidden');
+            signupForm.classList.toggle('hidden');
+            loginInfo.style.display = loginInfo.style.display === 'none' ? 'block' : 'none';
+            signupInfo.style.display = signupInfo.style.display === 'none' ? 'block' : 'none';
+
+            // Clear form fields and errors
+            clearFormErrors();
+        }
+
+        // Clear all error messages
+        function clearFormErrors() {
+            const errorMessages = document.querySelectorAll('.error-message');
+            errorMessages.forEach(msg => {
+                msg.classList.remove('show');
+                msg.textContent = '';
+            });
+
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.classList.remove('error', 'success');
+            });
+        }
+
+        // Validate email format
+        function validateEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        // Validate phone number
+        function validatePhone(phone) {
+            const regex = /^[0-9]{10,}$/;
+            return regex.test(phone.replace(/\D/g, ''));
+        }
+
+        // Validate password strength
+        function checkPasswordStrength() {
+            const password = document.getElementById('signupPassword').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+
+            let strength = 0;
+
+            if (password.length >= 8) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+
+            strengthBar.className = 'strength-bar';
+
+            if (strength < 2) {
+                strengthBar.classList.add('weak');
+                strengthText.textContent = 'Weak password';
+            } else if (strength < 4) {
+                strengthBar.classList.add('medium');
+                strengthText.textContent = 'Medium password';
+            } else {
+                strengthBar.classList.add('strong');
+                strengthText.textContent = 'Strong password';
+            }
+        }
+
+        // Display error message
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            const inputElement = document.getElementById(fieldId);
+
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.add('show');
+            }
+
+            if (inputElement) {
+                inputElement.classList.add('error');
+                inputElement.classList.remove('success');
+            }
+        }
+
+        // Display success state
+        function showSuccess(fieldId) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            const inputElement = document.getElementById(fieldId);
+
+            if (errorElement) {
+                errorElement.classList.remove('show');
+                errorElement.textContent = '';
+            }
+
+            if (inputElement) {
+                inputElement.classList.add('success');
+                inputElement.classList.remove('error');
+            }
+        }
+
+        // Handle Login form submission
+        function handleLogin(event) {
+            event.preventDefault();
+            clearFormErrors();
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            let isValid = true;
+
+            // Validate email
+            if (!email) {
+                showError('loginEmail', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('loginEmail', 'Please enter a valid email');
+                isValid = false;
+            } else {
+                showSuccess('loginEmail');
+            }
+
+            // Validate password
+            if (!password) {
+                showError('loginPassword', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('loginPassword', 'Password must be at least 6 characters');
+                isValid = false;
+            } else {
+                showSuccess('loginPassword');
+            }
+
+            if (isValid) {
+                alert('Login Successful!\n\nEmail: ' + email);
+                document.getElementById('loginFormElement').reset();
+                clearFormErrors();
+            }
+        }
+
+        // Handle Signup form submission
+        function handleSignup(event) {
+            event.preventDefault();
+            clearFormErrors();
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const gender = document.getElementById('gender').value;
+            const dob = document.getElementById('dob').value;
+            const address = document.getElementById('address').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const zipcode = document.getElementById('zipcode').value.trim();
+            const country = document.getElementById('country').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+
+            let isValid = true;
+
+            // Validate First Name
+            if (!firstName) {
+                showError('firstName', 'First name is required');
+                isValid = false;
+            } else if (firstName.length < 2) {
+                showError('firstName', 'First name must be at least 2 characters');
+                isValid = false;
+            } else {
+                showSuccess('firstName');
+            }
+
+            // Validate Last Name
+            if (!lastName) {
+                showError('lastName', 'Last name is required');
+                isValid = false;
+            } else if (lastName.length < 2) {
+                showError('lastName', 'Last name must be at least 2 characters');
+                isValid = false;
+            } else {
+                showSuccess('lastName');
+            }
+
+            // Validate Email
+            if (!email) {
+                showError('signupEmail', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('signupEmail', 'Please enter a valid email');
+                isValid = false;
+            } else {
+                showSuccess('signupEmail');
+            }
+
+            // Validate Phone
+            if (!phone) {
+                showError('phone', 'Phone number is required');
+                isValid = false;
+            } else if (!validatePhone(phone)) {
+                showError('phone', 'Please enter a valid phone number');
+                isValid = false;
+            } else {
+                showSuccess('phone');
+            }
+
+            // Validate Gender
+            if (!gender) {
+                showError('gender', 'Please select a gender');
+                isValid = false;
+            } else {
+                showSuccess('gender');
+            }
+
+            // Validate Date of Birth
+            if (!dob) {
+                showError('dob', 'Date of birth is required');
+                isValid = false;
+            } else {
+                const age = new Date().getFullYear() - new Date(dob).getFullYear();
+                if (age < 13) {
+                    showError('dob', 'You must be at least 13 years old');
+                    isValid = false;
+                } else {
+                    showSuccess('dob');
+                }
+            }
+
+            // Validate Address
+            if (!address) {
+                showError('address', 'Address is required');
+                isValid = false;
+            } else if (address.length < 5) {
+                showError('address', 'Address must be at least 5 characters');
+                isValid = false;
+            } else {
+                showSuccess('address');
+            }
+
+            // Validate City
+            if (!city) {
+                showError('city', 'City is required');
+                isValid = false;
+            } else {
+                showSuccess('city');
+            }
+
+            // Validate State
+            if (!state) {
+                showError('state', 'State is required');
+                isValid = false;
+            } else {
+                showSuccess('state');
+            }
+
+            // Validate Zip Code
+            if (!zipcode) {
+                showError('zipcode', 'Zip code is required');
+                isValid = false;
+            } else if (!/^\d{5,}$/.test(zipcode.replace(/\D/g, ''))) {
+                showError('zipcode', 'Zip code must be at least 5 digits');
+                isValid = false;
+            } else {
+                showSuccess('zipcode');
+            }
+
+            // Validate Country
+            if (!country) {
+                showError('country', 'Country is required');
+                isValid = false;
+            } else {
+                showSuccess('country');
+            }
+
+            // Validate Password
+            if (!password) {
+                showError('signupPassword', 'Password is required');
+                isValid = false;
+            } else if (password.length < 8) {
+                showError('signupPassword', 'Password must be at least 8 characters');
+                isValid = false;
+            } else {
+                showSuccess('signupPassword');
+            }
+
+            // Validate Confirm Password
+            if (!confirmPassword) {
+                showError('confirmPassword', 'Please confirm your password');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showError('confirmPassword', 'Passwords do not match');
+                isValid = false;
+            } else {
+                showSuccess('confirmPassword');
+            }
+
+            // Validate Terms
+            if (!terms) {
+                showError('terms', 'You must agree to the terms and conditions');
+                isValid = false;
+            } else {
+                showSuccess('terms');
+            }
+
+            if (isValid) {
+                alert('Account Created Successfully!\n\nName: ' + firstName + ' ' + lastName + '\nEmail: ' + email + '\nPhone: ' + phone);
+                document.getElementById('signupFormElement').reset();
+                clearFormErrors();
+                toggleForms();
+            }
+        }
+    </script>
+</body>
+</html>
